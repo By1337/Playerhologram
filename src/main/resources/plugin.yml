@@ -1,0 +1,41 @@
+name: PlayerHologram
+version: '${project.version}'
+main: org.by1337.ezholo.playerhologram.PlayerHologram
+api-version: 1.13
+depend: [DecentHolograms, Vault]
+authors: [ By1337 ]
+description: Let players create their own holograms!
+commands:
+  phologram:
+    description: Standart Command
+    aliases: [pholo, ph]
+    usage: Usage /pholo create <name>
+permissions:
+  pholo.*:
+    description: All cmd
+    default: op
+    children:
+      pholo.create: true
+      pholo.del: true
+      pholo.reload: true
+      pholo.move: true
+      pholo.addline: true
+      pholo.removeline: true
+  pholo.create:
+    description: /pholo create
+    default: op
+  pholo.reload:
+    description: /pholo reload
+    default: op
+  pholo.del:
+    description: /pholo del
+    default: op
+  pholo.move:
+    description: /pholo move
+    default: op
+  pholo.addline:
+    description: /pholo addline
+    default: op
+  pholo.removeline:
+    description: /pholo removeline
+    default: op
