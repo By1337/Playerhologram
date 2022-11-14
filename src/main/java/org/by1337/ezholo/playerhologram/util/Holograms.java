@@ -22,6 +22,8 @@ import java.util.List;
 public class Holograms {
 
     public void CreateHolograms(Player pl, String pholoName, String[] content) {
+        String[] blackSymbol = {" ", "|", "\\", "/", "-", "_", "+", "=", "~", "^", ">", "<", "`"};
+        for (String s : blackSymbol) pholoName = pholoName.replace(s, "");
         Hologram hologram = DHAPI.getHologram(pholoName);
         Location loc = pl.getLocation();
         loc.setY(loc.getY() + 1);
@@ -42,18 +44,25 @@ public class Holograms {
             msg += msg.equals("") ? "" : " ";
             msg += content[x];
         }
-        if (PlayerHologram.GetBoolean("using-worldguard") && IsRegion(pl)) {
-            Message.SendMsg(pl, PlayerHologram.GetString("msg.pholo-worldguard"));
-            return;
-        }
-        if (PlayerHologram.GetInt("max-string-length") <= msg.length()) {
-            Message.SendMsg(pl, PlayerHologram.GetString("msg.max-string-length-error"));
-            return;
-        }
         if (IsBadWord(msg)) {
             Message.SendMsg(pl, PlayerHologram.GetString("msg.bad-word"));
             return;
         }
+        if (hologram != null) {
+            Message.SendMsg(pl, PlayerHologram.GetString("msg.pholo-name-error"));
+            return;
+        }
+        
+        if (PlayerHologram.GetInt("max-string-length") <= msg.length()) {
+            Message.SendMsg(pl, PlayerHologram.GetString("msg.max-string-length-error"));
+            return;
+        }
+
+        if (PlayerHologram.GetBoolean("using-worldguard") && IsRegion(pl)) {
+            Message.SendMsg(pl, PlayerHologram.GetString("msg.pholo-worldguard"));
+            return;
+        }
+
         double price = msg.length() * PlayerHologram.GetInt("price-per-symbol");
         if (PlayerHologram.econ != null) {
             if (PlayerHologram.econ.has(pl, price)) {
@@ -64,19 +73,17 @@ public class Holograms {
                 return;
             }
         }
-        if (hologram == null) {
-            DHAPI.createHologram(pholoName, loc, true, Collections.singletonList(msg));
-            PlayerHologram.AddHolo(String.valueOf(pl.getUniqueId()), pholoName);
 
-        } else
-            Message.SendMsg(pl, PlayerHologram.GetString("msg.pholo-name-error"));
+        DHAPI.createHologram(pholoName, loc, true, Collections.singletonList(msg));
+        PlayerHologram.AddHolo(String.valueOf(pl.getUniqueId()), pholoName);
     }
 
     public void RemoveHolograms(Player pl, String name) {
         if (PlayerHologram.PlayerIsOwner(String.valueOf(pl.getUniqueId()), name)) {
             Hologram hologram = DHAPI.getHologram(name);
             if (hologram != null) {
-                hologram.destroy();
+             //   hologram.destroy();
+                DHAPI.removeHologram(name);
                 PlayerHologram.RemovePlayerHolo(String.valueOf(pl.getUniqueId()), name);
                 Message.SendMsg(pl, PlayerHologram.GetString("msg.pholo-remove"));
             } else {
