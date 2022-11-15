@@ -19,15 +19,20 @@ import java.util.Objects;
 public class cmd implements CommandExecutor {
     private final Holograms Holograms = new Holograms();
     private final PlayerHologram plugin;
+
     public cmd(PlayerHologram plugin) {
         this.plugin = plugin;
     }
 
 
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        Player p = null;
+       Player p = null;
         if (sender instanceof Player) {
             p = (Player) sender;
+            if (args.length == 0) {
+                Message.SendMsg(p, PlayerHologram.GetString("msg.unknown-command"));
+                return true;
+            }
             if (args[0].equals("create")) {
                 if (p.hasPermission("pholo.create")) {
                     if (args.length >= 3) {
@@ -95,14 +100,10 @@ public class cmd implements CommandExecutor {
 
             if (args[0].equals("reload")) {
                 if (p.hasPermission("pholo.reload")) {
-                    if (args.length >= 3) {
-                        Bukkit.getPluginManager().disablePlugin(this.plugin);
-                        this.plugin.reloadConfig();
-                        Bukkit.getPluginManager().enablePlugin(this.plugin);
-                        Message.SendMsg(p, "&aПлагин перезагружен!");
-                        return true;
-                    } else
-                        Message.SendMsg(p, "&f/pholo reload");
+                    plugin.reloadConfig();
+                    PlayerHologram.Save();
+                    PlayerHologram.Load();
+                    Message.SendMsg(p, "&aКонфиг перезагружен!");
                     return true;
                 } else
                     Message.SendMsg(p, PlayerHologram.GetString("msg.no-prem"));

@@ -24,7 +24,13 @@ public class Holograms {
     public void CreateHolograms(Player pl, String pholoName, String[] content) {
         String[] blackSymbol = {" ", "|", "\\", "/", "-", "_", "+", "=", "~", "^", ">", "<", "`"};
         for (String s : blackSymbol) pholoName = pholoName.replace(s, "");
-        Hologram hologram = DHAPI.getHologram(pholoName);
+        Hologram hologram;
+        try {
+             hologram = DHAPI.getHologram(pholoName);
+        }catch (Exception e){
+            Message.Error("Ошибка с API DecentHolograms\n" + e);
+            return;
+        }
         Location loc = pl.getLocation();
         loc.setY(loc.getY() + 1);
         String msg = "";
@@ -52,7 +58,7 @@ public class Holograms {
             Message.SendMsg(pl, PlayerHologram.GetString("msg.pholo-name-error"));
             return;
         }
-        
+
         if (PlayerHologram.GetInt("max-string-length") <= msg.length()) {
             Message.SendMsg(pl, PlayerHologram.GetString("msg.max-string-length-error"));
             return;
